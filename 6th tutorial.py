@@ -9,15 +9,15 @@ class ConvNet(nn.Module):
     def __init__(self, num_classes=10):
         super(ConvNet, self).__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2),
+            nn.Conv2d(3, 16, kernel_size=5, padding=2),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
         self.layer2 = nn.Sequential(
-            nn.Conv2d(16, 32, kernel_size=5, stride=1, padding=2),
+            nn.Conv2d(16, 32, kernel_size=5, padding=2),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
-        self.fc = nn.Linear(32*7*7, num_classes)
+        self.fc = nn.Linear(32*8*8, num_classes)
 
     def forward(self, x):
         out = self.layer1(x)
@@ -48,8 +48,7 @@ testset = torchvision.datasets.CIFAR10(root='./data', train=False,
 testloader = torch.utils.data.DataLoader(testset, batch_size=4,
                                          shuffle=False, num_workers=0)
 
-classes = ('plane', 'car', 'bird', 'cat',
-           'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+
 
 model = ConvNet()
 
@@ -77,12 +76,16 @@ for epoch in range(2):   # 데이터셋을 수차례 반복합니다.
 print('Finished Training')
 
 #Save the model checkpoint
-torch.save(model.state_diet(), 'model.ckpt')
+torch.save(model.state_dict(), 'model.ckpt')
 
 #Test the model
+classes = ('plane', 'car', 'bird', 'cat',
+           'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+
 model.eval()
 class_correct = list(0. for i in range(10))
 class_total = list(0. for i in range(10))
+
 with torch.no_grad():
     for (images, labels) in testloader:
         images = images.to(device)
